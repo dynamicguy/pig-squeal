@@ -56,6 +56,7 @@ import org.apache.pig.backend.executionengine.ExecException;
 import org.apache.pig.backend.executionengine.ExecJob;
 import org.apache.pig.backend.executionengine.ExecJob.JOB_STATUS;
 import org.apache.pig.backend.hadoop.executionengine.HJob;
+import org.apache.pig.backend.hadoop.executionengine.mapReduceLayer.Launcher;
 import org.apache.pig.backend.hadoop.executionengine.mapReduceLayer.MapReduceLauncher;
 import org.apache.pig.backend.hadoop.executionengine.physicalLayer.plans.PhysicalPlan;
 import org.apache.pig.backend.hadoop.executionengine.physicalLayer.relationalOperators.POStore;
@@ -150,6 +151,9 @@ public class PigServer {
         }
         if (normStr.equals("pigbody")) {
             return ExecType.PIG;
+        }
+        if (normStr.equals("storm")) {
+        	return ExecType.STORM;
         }
 
         int errCode = 2040;
@@ -1017,7 +1021,8 @@ public class PigServer {
             pp.explain(pps, format, verbose);
             
             MapRedUtil.checkLeafIsStore(pp, pigContext);
-            MapReduceLauncher launcher = new MapReduceLauncher();
+            Launcher launcher = pigContext.getLauncher();
+//            MapReduceLauncher launcher = new MapReduceLauncher();
             launcher.explain(pp, pigContext, eps, format, verbose);
 
             if (markAsExecute) {
@@ -1273,7 +1278,8 @@ public class PigServer {
      * @throws FrontendException
      */
     protected PigStats launchPlan(PhysicalPlan pp, String jobName) throws ExecException, FrontendException {
-        MapReduceLauncher launcher = new MapReduceLauncher();
+//    	MapReduceLauncher launcher = new MapReduceLauncher();
+    	Launcher launcher = pigContext.getLauncher(); //new MapReduceLauncher();
         PigStats stats = null;
         try {
             stats = launcher.launchPig(pp, jobName, pigContext);

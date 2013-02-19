@@ -50,7 +50,12 @@ import org.apache.pig.backend.datastorage.ElementDescriptor;
 import org.apache.pig.backend.executionengine.ExecException;
 import org.apache.pig.backend.hadoop.datastorage.HDataStorage;
 import org.apache.pig.backend.hadoop.executionengine.HExecutionEngine;
+import org.apache.pig.backend.hadoop.executionengine.mapReduceLayer.Launcher;
+import org.apache.pig.backend.hadoop.executionengine.mapReduceLayer.MapReduceLauncher;
 import org.apache.pig.backend.hadoop.streaming.HadoopExecutableManager;
+import org.apache.pig.impl.storm.SExecutionEngine;
+import org.apache.pig.impl.storm.StormExecutableManager;
+import org.apache.pig.impl.storm.StormLauncher;
 import org.apache.pig.impl.streaming.ExecutableManager;
 import org.apache.pig.impl.streaming.StreamingCommand;
 import org.apache.pig.impl.util.JarManager;
@@ -213,6 +218,18 @@ public class PigContext implements Serializable {
                                         properties); 
             }
             break;
+            case STORM:
+            {
+            	// TODO: jhl1 Stitch in the Streaming engine stuff.
+            	System.err.println("STUB: connect in PigContext");
+            	
+            	executionEngine = new SExecutionEngine (this);
+            	executionEngine.init();
+            	dfs = executionEngine.getDataStorage();
+            	lfs = new HDataStorage(URI.create("file:///"),
+            			properties); 
+            }
+            break;
             
             default:
             {
@@ -222,6 +239,29 @@ public class PigContext implements Serializable {
             }
         }
 
+    }
+
+    /*
+     * Added this routine to return the appropriate launcher per execType.
+     */
+    public Launcher getLauncher() throws ExecException {
+    	switch (execType) {
+    		case LOCAL:
+    		case MAPREDUCE:
+    		{
+    			return new MapReduceLauncher();
+    		}
+    		case STORM:
+    		{
+    			return new StormLauncher();
+    		}
+    		default:
+    		{
+    			int errCode = 2040;
+    			String msg = "Unkown exec type: " + execType;
+    			throw new ExecException(msg, errCode, PigException.BUG);
+    		}
+    	}
     }
 
     public void setJobtrackerLocation(String newLocation) {
@@ -611,6 +651,11 @@ public class PigContext implements Serializable {
             case MAPREDUCE: 
             {
                 executableManager = new HadoopExecutableManager();
+            }
+            break;
+            case STORM:
+            {
+            	executableManager = new StormExecutableManager();
             }
             break;
             default:

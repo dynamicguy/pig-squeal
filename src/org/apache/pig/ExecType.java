@@ -35,5 +35,9 @@ public enum ExecType implements Serializable {
     /**
      * Use the Experimental Hadoop framework; not available yet.
      */
-    PIG
+    PIG, 
+    /**
+     * Use the Storm framework.
+     */
+    STORM
 }
