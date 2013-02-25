@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.apache.pig.Accumulator;
 import org.apache.pig.Algebraic;
+import org.apache.pig.AlgebraicInverse;
 import org.apache.pig.EvalFunc;
 import org.apache.pig.FuncSpec;
 import org.apache.pig.PigException;
@@ -58,6 +59,7 @@ public class POUserFunc extends ExpressionOperator {
 
     FuncSpec funcSpec;
     FuncSpec origFSpec;
+    public static final byte INITIALNEG = -1;
     public static final byte INITIAL = 0;
     public static final byte INTERMEDIATE = 1;
     public static final byte FINAL = 2;
@@ -315,6 +317,9 @@ public class POUserFunc extends ExpressionOperator {
         // algebraic EvalFunc as
         // func is being changed.
         switch (Function) {
+        case INITIALNEG:
+        	funcSpec = new FuncSpec(getInitialNeg());
+        	break;
         case INITIAL:
             funcSpec = new FuncSpec(getInitial());
             break;
@@ -328,6 +333,19 @@ public class POUserFunc extends ExpressionOperator {
         funcSpec.setCtorArgs(origFSpec.getCtorArgs());
         instantiateFunc(funcSpec);
         setResultType(DataType.findType(((EvalFunc<?>) func).getReturnType()));
+    }
+    
+    public String getInitialNeg() throws ExecException {
+        instantiateFunc(origFSpec);
+        if (func instanceof AlgebraicInverse) {
+        	System.err.println("POUserFunc.getInitialNeg: STUB");
+            return ((AlgebraicInverse) func).getInitialInverse();
+        } else {
+            int errCode = 2072;
+            String msg = "Attempt to run a non-algebraic function"
+                + " as an algebraic function";
+            throw new ExecException(msg, errCode, PigException.BUG);
+        }
     }
 
     public String getInitial() throws ExecException {

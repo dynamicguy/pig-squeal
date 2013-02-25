@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.apache.pig.Accumulator;
 import org.apache.pig.Algebraic;
+import org.apache.pig.AlgebraicInverse;
 import org.apache.pig.EvalFunc;
 import org.apache.pig.FuncSpec;
 import org.apache.pig.PigException;
@@ -51,7 +52,7 @@ import org.apache.pig.impl.logicalLayer.schema.Schema;
  * the preferred method of usage it is available in case the combiner can not be
  * used for a given calculation.
  */
-public class COUNT extends EvalFunc<Long> implements Algebraic, Accumulator<Long>{
+public class COUNT extends EvalFunc<Long> implements Algebraic, Accumulator<Long> {
     private static TupleFactory mTupleFactory = TupleFactory.getInstance();
 
     @Override
@@ -86,8 +87,27 @@ public class COUNT extends EvalFunc<Long> implements Algebraic, Accumulator<Long
     public String getFinal() {
         return Final.class.getName();
     }
+    
+	static public class InitialInverse extends EvalFunc<Tuple> {
 
-    static public class Initial extends EvalFunc<Tuple> {
+        @Override
+        public Tuple exec(Tuple input) throws IOException {
+            // Since Initial is guaranteed to be called
+            // only in the map, it will be called with an
+            // input of a bag with a single tuple - the 
+            // count should always be -1 if bag is non empty
+            DataBag bag = (DataBag)input.get(0);
+            Iterator it = bag.iterator();
+            if (it.hasNext()){
+                Tuple t = (Tuple)it.next();
+                if (t != null && t.size() > 0 && t.get(0) != null)
+                    return mTupleFactory.newTuple(Long.valueOf(-1));
+            }
+            return mTupleFactory.newTuple(Long.valueOf(0));
+        }
+    }
+	
+    static public class Initial extends EvalFunc<Tuple> implements AlgebraicInverse {
 
         @Override
         public Tuple exec(Tuple input) throws IOException {
@@ -104,6 +124,11 @@ public class COUNT extends EvalFunc<Long> implements Algebraic, Accumulator<Long
             }
             return mTupleFactory.newTuple(Long.valueOf(0));
         }
+        
+    	@Override
+    	public String getInitialInverse() {
+    		return InitialInverse.class.getName();
+    	}        
     }
 
     static public class Intermediate extends EvalFunc<Tuple> {
@@ -196,5 +221,6 @@ public class COUNT extends EvalFunc<Long> implements Algebraic, Accumulator<Long
     public Long getValue() {
         return intermediateCount;
     }
+
 
 }
