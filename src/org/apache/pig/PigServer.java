@@ -155,6 +155,9 @@ public class PigServer {
         if (normStr.equals("storm")) {
         	return ExecType.STORM;
         }
+        if (normStr.equals("storm-local")) {
+        	return ExecType.STORMLOCAL;
+        }
 
         int errCode = 2040;
         String msg = "Unknown exec type: " + str;

@@ -218,12 +218,10 @@ public class PigContext implements Serializable {
                                         properties); 
             }
             break;
+            case STORMLOCAL:
             case STORM:
             {
-            	// TODO: jhl1 Stitch in the Streaming engine stuff.
-            	System.err.println("STUB: connect in PigContext");
-            	
-            	executionEngine = new SExecutionEngine (this);
+            	executionEngine = new SExecutionEngine(this);
             	executionEngine.init();
             	dfs = executionEngine.getDataStorage();
             	lfs = new HDataStorage(URI.create("file:///"),
@@ -251,6 +249,7 @@ public class PigContext implements Serializable {
     		{
     			return new MapReduceLauncher();
     		}
+    		case STORMLOCAL:
     		case STORM:
     		{
     			return new StormLauncher();

@@ -39,5 +39,9 @@ public enum ExecType implements Serializable {
     /**
      * Use the Storm framework.
      */
-    STORM
+    STORM, 
+    /**
+     * Use the Storm framework with local hadoop.
+     */
+    STORMLOCAL
 }
