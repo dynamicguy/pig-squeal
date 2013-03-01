@@ -54,7 +54,6 @@ import org.apache.pig.backend.hadoop.executionengine.mapReduceLayer.Launcher;
 import org.apache.pig.backend.hadoop.executionengine.mapReduceLayer.MapReduceLauncher;
 import org.apache.pig.backend.hadoop.streaming.HadoopExecutableManager;
 import org.apache.pig.impl.storm.SExecutionEngine;
-import org.apache.pig.impl.storm.StormExecutableManager;
 import org.apache.pig.impl.storm.StormLauncher;
 import org.apache.pig.impl.streaming.ExecutableManager;
 import org.apache.pig.impl.streaming.StreamingCommand;
@@ -653,8 +652,9 @@ public class PigContext implements Serializable {
             }
             break;
             case STORM:
+            case STORMLOCAL:
             {
-            	executableManager = new StormExecutableManager();
+            	executableManager = new HadoopExecutableManager();
             }
             break;
             default:
