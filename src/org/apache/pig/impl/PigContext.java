@@ -648,7 +648,6 @@ public class PigContext implements Serializable {
             case LOCAL:
             case MAPREDUCE: 
             {
-            	System.err.println("createExecutableManager: ---------------------------------------------------------------------------- " + execViaStorm);
             	if (execViaStorm) {
             		executableManager = new ExecutableManager();
             	} else {
