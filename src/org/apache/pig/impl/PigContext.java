@@ -53,7 +53,6 @@ import org.apache.pig.backend.hadoop.executionengine.HExecutionEngine;
 import org.apache.pig.backend.hadoop.executionengine.mapReduceLayer.Launcher;
 import org.apache.pig.backend.hadoop.executionengine.mapReduceLayer.MapReduceLauncher;
 import org.apache.pig.backend.hadoop.streaming.HadoopExecutableManager;
-import org.apache.pig.impl.storm.SExecutionEngine;
 import org.apache.pig.impl.storm.StormLauncher;
 import org.apache.pig.impl.streaming.ExecutableManager;
 import org.apache.pig.impl.streaming.StreamingCommand;
@@ -157,12 +156,25 @@ public class PigContext implements Serializable {
         this.paramFiles = paramFiles;
     }
     private List<String> paramFiles;
+
+	private boolean execViaStorm = false;
     
     public PigContext() {
         this(ExecType.MAPREDUCE, new Properties());
     }
         
     public PigContext(ExecType execType, Properties properties){
+    	// Going to leave execType to local/mapreduce and switch off a boolean for most stuff.
+    	// This will limit the fs changes that are necessary re:exectype (such as FileLocalizer).
+    	if (execType == ExecType.STORM || execType == ExecType.STORMLOCAL) {
+    		this.execViaStorm = true;
+    		if (execType == ExecType.STORM) {
+    			execType = ExecType.MAPREDUCE;
+    		} else {
+    			execType = ExecType.LOCAL;
+    		}
+    	}
+    	
         this.execType = execType;
         this.properties = properties;   
 
@@ -207,7 +219,7 @@ public class PigContext implements Serializable {
             case LOCAL:
             case MAPREDUCE:
             {
-                executionEngine = new HExecutionEngine (this);
+           		executionEngine = new HExecutionEngine (this);            		
 
                 executionEngine.init();
                 
@@ -215,16 +227,6 @@ public class PigContext implements Serializable {
                 
                 lfs = new HDataStorage(URI.create("file:///"),
                                         properties); 
-            }
-            break;
-            case STORMLOCAL:
-            case STORM:
-            {
-            	executionEngine = new SExecutionEngine(this);
-            	executionEngine.init();
-            	dfs = executionEngine.getDataStorage();
-            	lfs = new HDataStorage(URI.create("file:///"),
-            			properties); 
             }
             break;
             
@@ -246,12 +248,10 @@ public class PigContext implements Serializable {
     		case LOCAL:
     		case MAPREDUCE:
     		{
+    			if (execViaStorm) {
+    				return new StormLauncher();
+    			}
     			return new MapReduceLauncher();
-    		}
-    		case STORMLOCAL:
-    		case STORM:
-    		{
-    			return new StormLauncher();
     		}
     		default:
     		{
@@ -649,12 +649,6 @@ public class PigContext implements Serializable {
             case MAPREDUCE: 
             {
                 executableManager = new HadoopExecutableManager();
-            }
-            break;
-            case STORM:
-            case STORMLOCAL:
-            {
-            	executableManager = new HadoopExecutableManager();
             }
             break;
             default:
