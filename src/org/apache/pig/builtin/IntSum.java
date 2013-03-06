@@ -22,9 +22,11 @@ import java.util.Iterator;
 
 import org.apache.pig.Accumulator;
 import org.apache.pig.Algebraic;
+import org.apache.pig.AlgebraicInverse;
 import org.apache.pig.EvalFunc;
 import org.apache.pig.PigException;
 import org.apache.pig.backend.executionengine.ExecException;
+import org.apache.pig.builtin.SUM.Initial;
 import org.apache.pig.data.DataBag;
 import org.apache.pig.data.DataType;
 import org.apache.pig.data.Tuple;
@@ -61,7 +63,7 @@ public class IntSum extends EvalFunc<Long> implements Algebraic, Accumulator<Lon
         return Final.class.getName();
     }
 
-    static public class Initial extends EvalFunc<Tuple> {
+    static public class Initial extends EvalFunc<Tuple> implements AlgebraicInverse {
         private static TupleFactory tfact = TupleFactory.getInstance();
 
         @Override
@@ -91,6 +93,23 @@ public class IntSum extends EvalFunc<Long> implements Algebraic, Accumulator<Lon
                 String msg = "Error while computing sum in " + this.getClass().getSimpleName();
                 throw new ExecException(msg, errCode, PigException.BUG, e);           
             }
+        }
+
+		@Override
+		public String getInitialInverse() {
+			return InitialInverse.class.getName();
+		}
+    }
+    static public class InitialInverse extends Initial {
+    	private static TupleFactory tfact = TupleFactory.getInstance();
+        @Override
+        public Tuple exec(Tuple input) throws IOException {
+        	Tuple ret = super.exec(input);
+        	if (ret.get(0) == null) {
+        		return ret;
+        	} else {
+        		return tfact.newTuple(-(Long)ret.get(0));
+        	}
         }
     }
     static public class Intermediate extends EvalFunc<Tuple> {
