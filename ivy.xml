@@ -236,7 +236,7 @@
     <dependency org="org.vafer" name="jdeb" rev="${jdeb.version}"
       conf="compile->master">
     </dependency>
-    <dependency org="storm" name="storm" rev="0.8.1" 
+    <dependency org="storm" name="storm" rev="0.8.2" 
       conf="compile->master" transitive="true"/>
     <dependency org="com.esotericsoftware.kryo" name="kryo" rev="2.17" 
       conf="compile->master" transitive="true"/>
