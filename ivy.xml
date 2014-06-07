@@ -428,6 +428,12 @@
     <dependency org="org.codehaus.jettison" name="jettison" rev="${jettison.version}"
       conf="hadoop23->master"/>
 
+    <!-- For Squeal (Pig on Storm) -->
+    <dependency org="storm" name="storm-core" rev="0.9.0.1" 
+      conf="compile->master" transitive="true"/>
+    <dependency org="com.esotericsoftware.kryo" name="kryo" rev="2.17" 
+      conf="compile->master" transitive="true"/>
+
   </dependencies>
 </ivy-module>
 
