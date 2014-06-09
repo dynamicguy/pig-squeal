@@ -24,11 +24,19 @@ INCOMPATIBLE CHANGES
  
 IMPROVEMENTS
 
+PIG-3939: SPRINTF function to format strings using a printf-style template (mrflip via cheolsoo)
+
 PIG-3970: Merge Tez branch into trunk (daijy)
  
 OPTIMIZATIONS
  
 BUG FIXES
+
+PIG-3986: PigSplit to support multiple split class (tongjie via cheolsoo)
+
+PIG-3988: PigStorage: CommandLineParser is not thread safe (tmwoodruff via cheolsoo)
+
+PIG-2409: Pig show wrong tracking URL for hadoop 2 (lbendig via rohini)
 
 PIG-3978: Container reuse does not across PigServer (daijy)
 
@@ -168,6 +176,12 @@ OPTIMIZATIONS
 PIG-3882: Multiquery off mode execution is not done in batch and very inefficient (rohini)
  
 BUG FIXES
+
+PIG-3991: TestErrorHandling.tesNegative7 is broken in trunk/branch-0.13 (cheolsoo)
+
+PIG-3990: ant docs is broken in trunk/branch-0.13 (cheolsoo)
+
+PIG-3989: PIG_OPTS does not work with some version of HADOOP (daijy)
 
 PIG-3739: The Warning_4 e2e test is broken in trunk (aniket486)
 
