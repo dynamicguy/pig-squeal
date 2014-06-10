@@ -371,11 +371,6 @@
             <include name="trevni-avro-${avro.version}.jar"/>
             <include name="snappy-java-${snappy.version}.jar"/>
             <include name="asm*.jar"/>
-            <!-- Squeal dependencies -->
-            <include name="storm*.jar" />
-            <include name="jgrapht-core*.jar" />
-            <include name="kryo*.jar" />
-            <include name="curator*.jar" />
         </patternset>
     </fileset>
 
@@ -398,11 +393,6 @@
             <include name="snappy-java-${snappy.version}.jar"/>
             <include name="asm*.jar"/>
             <include name="tez-*-${tez.version}.jar" if="isHadoop23"/>
-            <!-- Squeal dependencies -->
-            <include name="storm*.jar" />
-            <include name="jgrapht-core*.jar" />
-            <include name="kryo*.jar" />
-            <include name="curator*.jar" />
         </patternset>
     </fileset>
 
@@ -1021,6 +1011,11 @@
             <fileset dir="${ivy.lib.dir}" includes="accumulo-*.jar" excludes="accumulo-minicluster*.jar"/>
             <fileset dir="${ivy.lib.dir}" includes="avro-*.jar" excludes="avro-*tests.jar"/>
             <fileset dir="${ivy.lib.dir}" includes="json-simple-*.jar"/>
+            <!-- Squeal dependencies -->
+            <fileset dir="${ivy.lib.dir}" includes="storm*.jar" />
+            <fileset dir="${ivy.lib.dir}" includes="jgrapht-core*.jar" />
+            <fileset dir="${ivy.lib.dir}" includes="kryo*.jar" />
+            <fileset dir="${ivy.lib.dir}" includes="curator*.jar" />
         </copy>
 
         <copy file="${output.jarfile.backcompat.withouthadoop}" tofile="${tar.dist.dir}/${final.name}-withouthadoop.jar" />
